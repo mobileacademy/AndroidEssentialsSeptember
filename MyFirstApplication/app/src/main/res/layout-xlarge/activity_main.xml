@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:gravity="center_horizontal"
     tools:context="ro.academy.mobile.myfirstapplication.MainActivity">
 
@@ -35,6 +35,5 @@
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:text="Open Second Activity"
-        android:layout_marginTop="30dp"
-        />
+        android:layout_marginTop="30dp"/>
 </LinearLayout>
