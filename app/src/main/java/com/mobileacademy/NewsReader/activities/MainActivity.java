@@ -11,6 +11,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.SubMenu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -27,14 +28,19 @@ import android.widget.GridView;
 import android.widget.Toast;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobileacademy.NewsReader.data.CachedData;
 import com.mobileacademy.NewsReader.models.Publication;
 import com.mobileacademy.NewsReader.R;
 import com.mobileacademy.NewsReader.adapters.PublicationListAdapter;
+import com.mobileacademy.NewsReader.services.ListPackagesService;
+import com.mobileacademy.NewsReader.services.CounterService;
 import com.mobileacademy.NewsReader.utils.AppSharedPref;
+import com.mobileacademy.NewsReader.utils.NotifUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -194,15 +200,19 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.item_count) {
-
+            Intent service = new Intent(this, CounterService.class);
+            service.setAction(CounterService.ACTION_COUNT);
+            this.startService(service);
         } else if (id == R.id.item_package_list) {
-
+            Intent service = new Intent(this, ListPackagesService.class);
+            this.startService(service);
 
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
+            NotifUtils.scheduleNotification(MainActivity.this, NotifUtils.getCustomNotif(MainActivity.this), 5000);
 
         } else if (id == R.id.nav_send) {
             sendMessageTo();

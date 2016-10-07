@@ -25,7 +25,7 @@ public class ArticleListActivity extends AppCompatActivity implements AdapterVie
 
     public static String TAG = ArticleListActivity.class.getSimpleName();
     private ArrayList articleList;
-    private String publicationName = "";
+    private int publicationId = 0;
 
     private ListView listView;
 
@@ -43,11 +43,21 @@ public class ArticleListActivity extends AppCompatActivity implements AdapterVie
 
         Intent i = getIntent();
 
-        if(i!=null && (publicationName = i.getStringExtra(PUBLICATION_EXTRA))!=null){
-            Log.d(TAG, "publicationName - " + publicationName);
+        if(i!=null && (publicationId = i.getIntExtra(PUBLICATION_ID_EXTRA, 0))!=0){
+            Log.d(TAG, "publicationId - " + publicationId);
 
-            renderArticleList(publicationName);
+            if(publicationId != -1) {
+                // get articles from db by publication id
+                 articleList = (ArrayList) NewsReaderApplication.getInstance().getDatasource().getAllArticlesByPublication(publicationId);
+                Log.d(TAG, "articles size: " + articleList.size());
 
+                ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, articleList);
+
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(this);
+
+            }
+//            renderArticleList(publicationName);
         }else{
             Log.e(TAG, "The publication id should have been passed in the intent");
             //finish the activity

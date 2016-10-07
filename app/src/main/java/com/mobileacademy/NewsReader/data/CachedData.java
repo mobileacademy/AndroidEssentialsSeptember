@@ -1,8 +1,10 @@
 package com.mobileacademy.NewsReader.data;
 
+import android.util.Log;
 
 import com.mobileacademy.NewsReader.NewsReaderApplication;
 import com.mobileacademy.NewsReader.R;
+import com.mobileacademy.NewsReader.database.ArticlesDataSource;
 import com.mobileacademy.NewsReader.models.Article;
 import com.mobileacademy.NewsReader.models.Publication;
 
@@ -117,5 +119,26 @@ public class CachedData {
         Publication fastCo = new Publication(96, "Fast Company", R.drawable.fc_logo);
         fastCo.setArticleList(articlesForPub2);
         publicationMap.put(name, fastCo);
+    }
+
+    public void insertArticleDummyContentToDb() {
+        Log.d(TAG, "insertArticleDummyContentToDb");
+
+        ArrayList<Article> articlesForPub1 = getArticleListForPublication("Hacker News");
+
+        if(articlesForPub1.size() > 0) {
+            for (Article a: articlesForPub1) {
+                NewsReaderApplication.getInstance().getDatasource().createArticle(a.getId(), a.getName(), a.getTime(), a.getUrl(), a.getPublicationId());
+            }
+        }
+
+        ArrayList<Article> articlesForPub2 = getArticleListForPublication("Tech Crunch");
+
+        if(articlesForPub2.size() > 0) {
+            for (Article a: articlesForPub2) {
+                NewsReaderApplication.getInstance().getDatasource().createArticle(a.getId(), a.getName(), a.getTime(), a.getUrl(), a.getPublicationId());
+            }
+        }
+
     }
 }
