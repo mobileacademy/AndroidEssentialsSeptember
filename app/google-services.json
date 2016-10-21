@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "278897424595",
+    "firebase_url": "https://mobileacademy-fca43.firebaseio.com",
+    "project_id": "mobileacademy-fca43",
+    "storage_bucket": "mobileacademy-fca43.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278897424595:android:a83320dee2f18f79",
+        "android_client_info": {
+          "package_name": "com.mobileacademy.newsreader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278897424595-kt15ohg10jnamqcpuj7qi55msdv0h02n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFdMHaP027BL-WFgw9weG8b00CfRJGnUE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
