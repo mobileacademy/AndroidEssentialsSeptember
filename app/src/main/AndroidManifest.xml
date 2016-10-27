@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- add permission for GCM communication -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -43,6 +44,9 @@
         <service
             android:name=".services.ListPackagesService"
             android:exported="false" />
+        <service
+            android:name=".services.FetchArticlesService"
+            android:exported="false" />
 
         <!-- which enables various aspects of handling messages such as detecting different downstream message types,
         determining upstream send status, and automatically displaying simple notifications on the app’s behalf. -->
@@ -70,7 +74,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receivers.LocationUpdatedReceiver"
+            android:enabled="true"
+            android:exported="false">
 
+            <intent-filter>
+                <action android:name="com.mobileacademy.newsreader.LOCATION_UPDATE"/>
+            </intent-filter>
+        </receiver>
         <!-- A declaration of GcmReceiver, which handles messages sent from GCM to your application.
          Because this service needs permission to receive messages from GCM,-->
         <receiver

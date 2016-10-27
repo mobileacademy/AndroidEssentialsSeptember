@@ -42,7 +42,19 @@ public class AppSharedPref {
         editor.commit();
     }
 
-    public String getValue(String key) {
+    public void setBoolean(String key, boolean isTrue) {
+        // get Editor object
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        // put values in editor
+        editor.putBoolean(key, isTrue);
+        editor.commit();
+    }
+
+    public boolean getBoolean(String key) {
+        return sharedpreferences.getBoolean(key, false);
+    }
+
+    public String getString(String key) {
         return sharedpreferences.getString(key, "");
     }
 
