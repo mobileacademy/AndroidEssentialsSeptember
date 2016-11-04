@@ -38,6 +38,7 @@ import com.mobileacademy.NewsReader.data.MockDataHandler;
 import com.mobileacademy.NewsReader.models.Publication;
 import com.mobileacademy.NewsReader.R;
 import com.mobileacademy.NewsReader.adapters.PublicationListAdapter;
+import com.mobileacademy.NewsReader.services.FetchArticlesService;
 import com.mobileacademy.NewsReader.services.ListPackagesService;
 import com.mobileacademy.NewsReader.services.CounterService;
 import com.mobileacademy.NewsReader.services.MyTaskService;
@@ -190,12 +191,9 @@ public class MainActivity extends AppCompatActivity
 
         MyTaskService.startChargingTask(this);
 
-    }
+        //TODO: delete - used for test purposes
+        startService(new Intent(this, FetchArticlesService.class));
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver();
     }
 
     @Override
@@ -281,6 +279,7 @@ public class MainActivity extends AppCompatActivity
             this.startService(service);
 
         } else if (id == R.id.nav_slideshow) {
+           // startActivity(new Intent(this, MapsActivity.class));
 
         } else if (id == R.id.nav_manage) {
 

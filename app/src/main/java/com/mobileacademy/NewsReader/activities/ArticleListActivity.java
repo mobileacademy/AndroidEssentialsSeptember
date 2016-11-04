@@ -1,45 +1,37 @@
 package com.mobileacademy.NewsReader.activities;
 
-import android.app.ProgressDialog;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.Toast;
 
 import com.mobileacademy.NewsReader.R;
-import com.mobileacademy.NewsReader.data.MockDataHandler;
+import com.mobileacademy.NewsReader.fragments.NewStoriesArticleFragment;
+import com.mobileacademy.NewsReader.fragments.TopStoriesArticleFragment;
 import com.mobileacademy.NewsReader.models.Article;
-import com.mobileacademy.NewsReader.utils.HackerNewsAPI;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-
-public class ArticleListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, Callback {
-
-    public static String PUBLICATION_EXTRA = "publication_extra";
-    public static String PUBLICATION_ID_EXTRA = "publication_id_extra";
-    private static final int NO_OF_ARTICLES = 20;
+public class ArticleListActivity extends AppCompatActivity implements TopStoriesArticleFragment.OnListFragmentInteractionListener,
+        NewStoriesArticleFragment.OnListFragmentInteractionListener {
 
     public static String TAG = ArticleListActivity.class.getSimpleName();
-    private ArrayList<Article> articleList;
-    private int publicationId = 0;
+    public static String PUBLICATION_EXTRA = "publication_extra";
+    public static String PUBLICATION_ID_EXTRA = "publication_id_extra";
 
-    private ListView listView;
-    ProgressDialog loadingDialog;
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
+
+    private int publicationId = 0;
 
     @Override
     /**
@@ -48,7 +40,63 @@ public class ArticleListActivity extends AppCompatActivity implements AdapterVie
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article_list);
+        setContentView(R.layout.activity_article_main);
+
+        mPager = (ViewPager) findViewById(R.id.vpPager);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Top Stories"));
+        tabLayout.addTab(tabLayout.newTab().setText("New Stories"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        mPager.setAdapter(mPagerAdapter);
+        mPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+        // Attach the page change listener inside the activity
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            // This method will be invoked when a new page becomes selected.
+            @Override
+            public void onPageSelected(int position) {
+                Toast.makeText(ArticleListActivity.this,
+                        "Selected page position: " + position, Toast.LENGTH_SHORT).show();
+            }
+
+            // This method will be invoked when the current page is scrolled
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // Code goes here
+            }
+
+            // Called when the scroll state changes:
+            // SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Code goes here
+            }
+        });
+
 
         Intent i = getIntent();
 
@@ -58,18 +106,22 @@ public class ArticleListActivity extends AppCompatActivity implements AdapterVie
                 && (publicationName = i.getStringExtra(PUBLICATION_EXTRA)) != null) {
             Log.d(TAG, "publicationId - " + publicationId);
 
-            if (publicationId != -1) {
-
-                loadingDialog = new ProgressDialog(this);
-                loadingDialog.setCancelable(false);
-                loadingDialog.setMessage("Loading");
-
-
-                // get articles from db by publication id
-                //articleList = (ArrayList) NewsReaderApplication.getInstance().getDatasource().getAllArticlesByPublication(publicationId);
-                listView = (ListView) findViewById(R.id.lv_articles);
-                loadArticlesFromServer(publicationName);
-            }
+//            if (publicationId != -1) {
+//                TopStoriesArticleFragment topStoriesArticleFragment;
+//                FragmentManager fragmentManager = getSupportFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                if(fragmentManager.findFragmentByTag("top_stories_tag") == null) {
+//                    topStoriesArticleFragment = new TopStoriesArticleFragment();
+//                } else {
+//                    topStoriesArticleFragment = (TopStoriesArticleFragment) fragmentManager.findFragmentByTag("top_stories_tag");
+//                }
+//                // Replace whatever is in the fragment_container view with this fragment,
+//                // and add the transaction to the back stack
+//                fragmentTransaction.replace(R.id.fragment_container, topStoriesArticleFragment, "top_stories_tag");
+//                fragmentTransaction.addToBackStack(null);
+//
+//                fragmentTransaction.commit();
+//            }
         } else {
             Log.e(TAG, "The publication id && publication name should have been passed in the intent");
             //finish the activity
@@ -80,109 +132,71 @@ public class ArticleListActivity extends AppCompatActivity implements AdapterVie
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+
+    @Override
     protected void onPause() {
         super.onPause();
-        loadingDialog.dismiss();
-    }
-
-    private void setupList(ArrayList<Article> articleList) {
-        this.articleList = articleList;
-        Log.d(TAG, "articles size: " + articleList.size());
-
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, articleList);
-
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
-    }
-
-    private void loadArticlesFromServer(String publicationName) {
-        switch (publicationName) {
-            case MockDataHandler.HACKER_NEWS:
-                loadingDialog.show();
-                retrieveByUrl(HackerNewsAPI.TOP_STORIES_ENDPOINT);
-                return;
-            case MockDataHandler.FAST_COMPANY:
-                loadingDialog.show();
-                retrieveByUrl(HackerNewsAPI.NEW_STORIES_ENDPOINT);
-                return;
-            default:
-                return;
-        }
-    }
-
-    private void retrieveByUrl(String url) {
-        try {
-            HackerNewsAPI.retrieveStories(url, this);
-        } catch (IOException e) {
-            Log.e(TAG, "ERROR retrieve by url", e);
-        }
-    }
-
-    private Article getNewsItemFromJSON(JSONObject json) {
-        Article item = new Article();
-
-        String title = json.optString("title");
-        String url = json.optString("url");
-        int id = json.optInt("id");
-
-        item.setId(id);
-        item.setUrl(url);
-        item.setName(title);
-
-        return item;
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-        Article article = articleList.get(position);
-
+    public void onNewStoryArticleSelected(Article article) {
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(article.getUrl()));
         startActivity(i);
     }
 
     @Override
-    public void onFailure(Call call, IOException e) {
-        Log.e(TAG, "failed to retrieve data", e);
-        loadingDialog.dismiss();
-        finish();
+    public void onTopStoryArticleSelected(Article item) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(item.getUrl()));
+        startActivity(i);
     }
 
-    @Override
-    public void onResponse(Call call, Response response) throws IOException {
-        String articleListJson = response.body().string();
-        Log.d(TAG, "Received articles array " + articleListJson);
+    public static class MyPagerAdapter extends FragmentPagerAdapter {
+        private int tabs;
 
-        new LoadArticlesAsync().execute(articleListJson);
-
-    }
-
-    private class LoadArticlesAsync extends AsyncTask<String, Void, ArrayList<Article>> {
-
-        protected ArrayList<Article> doInBackground(String... ids) {
-            ArrayList<Article> articles = new ArrayList<>();
-            try {
-            JSONArray jsonArticlesArray = new JSONArray(ids[0]);
-                //take the first NO_OF_ARTICLES articles
-                for (int i = 0; i < Math.min(NO_OF_ARTICLES,jsonArticlesArray.length()); i++) {
-                    String articleURL = HackerNewsAPI.getArticleById(jsonArticlesArray.getString(i));
-                    String articleString = HackerNewsAPI.retrieveStories(articleURL);
-                    if(articleString == null) continue;
-                    JSONObject articleJson = new JSONObject(articleString);
-                    articles.add(getNewsItemFromJSON(articleJson));
-                }
-
-            }catch (IOException|JSONException e){
-                Log.e(TAG, "doInBackground: ", e);
-            }
-            return articles;
-
+        public MyPagerAdapter(FragmentManager fragmentManager, int NumOfTabs) {
+            super(fragmentManager);
+            tabs = NumOfTabs;
         }
-
-        protected void onPostExecute(ArrayList<Article> result) {
-            setupList(result);
-            loadingDialog.dismiss();
+        // Returns total number of pages
+        @Override
+        public int getCount() {
+            return tabs;
+        }
+        // Returns the fragment to display for that page
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0: // Fragment # 0 - This will show FirstFragment
+                    return TopStoriesArticleFragment.newInstance();
+                case 1: // Fragment # 0 - This will show FirstFragment different title
+                    return NewStoriesArticleFragment.newInstance();
+                default:
+                    return null;
+            }
+        }
+        // Returns the page title for the top indicator
+        @Override
+        public CharSequence getPageTitle(int position) {
+            String title = null;
+            switch (position) {
+                case 0:
+                    title = "TopStories";
+                    break;
+                case 1:
+                    title = "NewStories";
+                    break;
+            }
+            return title;
         }
     }
 
