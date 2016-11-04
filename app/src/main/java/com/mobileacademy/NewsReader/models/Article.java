@@ -1,15 +1,28 @@
 package com.mobileacademy.NewsReader.models;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by danielastamati on 21/04/16.
  */
 public class Article {
 
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("time")
     private String time;
+
+    @SerializedName("name")
     private String name;
+
+    @SerializedName("pictureResource")
     private int pictureResource;
+
+    @SerializedName("url")
     private String url;
+
+    @SerializedName("publicationId")
     private int publicationId;
 
     public Article() {}
